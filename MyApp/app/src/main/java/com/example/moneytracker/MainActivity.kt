@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             addExpenseItem()
         }
 
-        // Скрытие клавиатуры при клике вне полей ввода
+        // Hiding the keyboard when clicking outside the input fields
         mainLayout.setOnClickListener {
             hideKeyboard()
         }
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val expenseItem = ExpenseItem(etExpenseAmount, etExpenseDescription, expenseView)
         expenseItems.add(expenseItem)
 
-        // Добавляем слушатель изменений для суммы траты
+        // Adding a change listener for the amount spent
         etExpenseAmount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Обработчик удаления траты
+        // Waste deletion handler
         btnRemoveExpense.setOnClickListener {
             if (expenseItems.size > 1) {
                 expensesContainer.removeView(expenseView)

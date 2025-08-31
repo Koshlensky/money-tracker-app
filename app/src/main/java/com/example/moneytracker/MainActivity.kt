@@ -22,10 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab: FloatingActionButton
 
     private val adapter = PeopleAdapter { personId ->
-        startActivity(
-            Intent(this, ExpensesActivity::class.java)
-                .putExtra("personId", personId)
-        )
+        startActivity(Intent(this, ExpensesActivity::class.java).putExtra("personId", personId))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,13 +52,13 @@ class MainActivity : AppCompatActivity() {
 /* ----------------------------- Adapter ----------------------------- */
 
 private class PeopleAdapter(
-    val onOpen: (Long) -> Unit
+    private val onOpenRaw: (Long) -> Unit
 ) : RecyclerView.Adapter<PeopleVH>() {
 
     private var items: List<Person> = emptyList()
 
     init {
-        setHasStableIds(true) // важный флаг: у карточек стабильные ID
+        setHasStableIds(true) // стабильные ID уменьшают хаотичные ребинды
     }
 
     fun submit(list: List<Person>) {
@@ -69,13 +66,22 @@ private class PeopleAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemId(position: Int): Long = items[position].id
     override fun getItemCount(): Int = items.size
+    override fun getItemId(position: Int): Long = items[position].id
+
+    // ---- дебаунсер открытия, чтобы не плодить несколько активити ----
+    private var lastOpenAt = 0L
+    private fun openSafe(id: Long) {
+        val now = android.os.SystemClock.elapsedRealtime()
+        if (now - lastOpenAt < 500) return // игнорируем повтор в течение 0.5 c
+        lastOpenAt = now
+        onOpenRaw(id)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleVH {
         val v = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_person, parent, false)
-        return PeopleVH(v, onOpen)
+        return PeopleVH(v, ::openSafe)
     }
 
     override fun onBindViewHolder(holder: PeopleVH, position: Int) {
@@ -87,7 +93,7 @@ private class PeopleAdapter(
 
 private class PeopleVH(
     v: View,
-    private val onOpen: (Long) -> Unit
+    private val openSafe: (Long) -> Unit
 ) : RecyclerView.ViewHolder(v) {
 
     private val etName: EditText = v.findViewById(R.id.etName)
@@ -96,7 +102,7 @@ private class PeopleVH(
     private val clickAway: View = v.findViewById(R.id.clickAway)
     private val btnRemove: ImageButton = v.findViewById(R.id.btnRemovePerson)
 
-    // текущая модель и активные вотчеры
+    // держим текущую модель и ссылки на активные вотчеры
     private var current: Person? = null
     private var nameWatcher: TextWatcher? = null
     private var baseWatcher: TextWatcher? = null
@@ -104,16 +110,16 @@ private class PeopleVH(
     fun bind(p: Person) {
         current = p
 
-        // 1) снимаем старые вотчеры, иначе они будут дергать другие модели
+        // 1) снимаем старые вотчеры перед setText(), чтобы они не сработали на чужую модель
         nameWatcher?.let { etName.removeTextChangedListener(it) }
         baseWatcher?.let { etBase.removeTextChangedListener(it) }
 
-        // 2) выставляем значения БЕЗ триггера слушателей
+        // 2) выставляем значения
         etName.setText(p.name)
         etBase.setText(if (p.baseTotalCents == 0L) "" else (p.baseTotalCents / 100.0).toString())
         tvRemaining.text = "Осталось: ${centsToUsdText(p.remainingCents())}"
 
-        // 3) ставим новые вотчеры, работающие с current
+        // 3) навешиваем НОВЫЕ вотчеры, работающие с current
         nameWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -137,22 +143,18 @@ private class PeopleVH(
             }
         }.also { etBase.addTextChangedListener(it) }
 
-        // открыть окно трат, если нажали по карточке (не по полям)
-        itemView.setOnClickListener { /* гасим общий клик */ }
-        clickAway.setOnClickListener { onOpen(p.id) }
-        itemView.setOnTouchListener { _, _ ->
-            if (!etName.isFocused && !etBase.isFocused) { onOpen(p.id); true } else false
+        // ----- Открытие экрана трат: оставляем ОДИН способ -----
+        itemView.setOnClickListener {
+            if (!etName.isFocused && !etBase.isFocused) openSafe(p.id)
         }
+        clickAway.setOnClickListener { openSafe(p.id) }
+        // ВАЖНО: не используем setOnTouchListener — он мог вызывать дубли
 
-        // удалить карточку с подтверждением
+        // ----- Удаление карточки -----
         btnRemove.setOnClickListener {
             AlertDialog.Builder(itemView.context)
                 .setTitle("Удалить?")
-                .setMessage(
-                    "Удалить карточку «${
-                        if (p.name.isBlank()) "без имени" else p.name
-                    }»?"
-                )
+                .setMessage("Удалить карточку «${if (p.name.isBlank()) "без имени" else p.name}»?")
                 .setPositiveButton("Удалить") { _, _ ->
                     PersonsRepo.people.removeAll { it.id == p.id }
                     (itemView.parent as? RecyclerView)?.adapter?.notifyDataSetChanged()

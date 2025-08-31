@@ -7,7 +7,7 @@
     android:padding="16dp"
     android:layout_marginBottom="12dp">
 
-    <!-- верхняя строка: имя + крестик справа -->
+    <!-- Верхняя строка: Имя + крестик удаления -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,16 +20,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Имя Фамилия"
-            android:inputType="textPersonName"/>
+            android:inputType="textPersonName" />
 
         <ImageButton
             android:id="@+id/btnRemovePerson"
             android:layout_width="32dp"
             android:layout_height="32dp"
+            android:padding="4dp"
             android:contentDescription="Удалить"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp"/>
+            android:background="?attr/selectableItemBackgroundBorderless" />
     </LinearLayout>
 
     <TextView
@@ -37,24 +37,25 @@
         android:layout_height="wrap_content"
         android:text="Всего денег (USD)"
         android:textStyle="bold"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="12dp" />
 
     <EditText
         android:id="@+id/etBaseTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="0.00"
-        android:inputType="numberDecimal"/>
+        android:inputType="numberDecimal" />
 
     <TextView
         android:id="@+id/tvRemaining"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Осталось: $0.00"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
 
+    <!-- маленькая «пустая» зона для клика вне полей -->
     <View
         android:id="@+id/clickAway"
         android:layout_width="match_parent"
-        android:layout_height="8dp"/>
+        android:layout_height="8dp" />
 </LinearLayout>

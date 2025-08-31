@@ -1,81 +1,104 @@
 package com.example.moneytracker
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.inputmethod.InputMethodManager
-import android.widget.ImageButton
+import android.view.View
+import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var etTotalAmount: EditText
-    private lateinit var expensesContainer: LinearLayout
-    private lateinit var mainLayout: View
-
-    private val expenseItems = mutableListOf<ExpenseItem>()
+    private lateinit var rv: RecyclerView
+    private lateinit var fab: FloatingActionButton
+    private val adapter = PeopleAdapter { personId ->
+        startActivity(Intent(this, ExpensesActivity::class.java).putExtra("personId", personId))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        rv = findViewById(R.id.rvPeople)
+        fab = findViewById(R.id.fabAddPerson)
 
-        etTotalAmount = findViewById(R.id.etTotalAmount)
-        expensesContainer = findViewById(R.id.expensesContainer)
-        mainLayout = findViewById(R.id.mainLayout)
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter = adapter
+        adapter.submit(PersonsRepo.people)
 
-        findViewById<ImageButton>(R.id.btnAddExpense).setOnClickListener { addExpenseItem() }
-        mainLayout.setOnClickListener { hideKeyboard() }
-
-        addExpenseItem()
+        fab.setOnClickListener {
+            PersonsRepo.addPerson()
+            adapter.submit(PersonsRepo.people)
+        }
     }
 
-    private fun addExpenseItem() {
-        val view = LayoutInflater.from(this).inflate(R.layout.item_expense, expensesContainer, false)
-        val etExpenseAmount = view.findViewById<EditText>(R.id.etExpenseAmount)
-        val etExpenseDescription = view.findViewById<EditText>(R.id.etExpenseDescription)
-        val btnRemoveExpense = view.findViewById<ImageButton>(R.id.btnRemoveExpense)
+    override fun onResume() {
+        super.onResume()
+        adapter.submit(PersonsRepo.people) // обновить остаток после трат
+    }
+}
 
-        val item = ExpenseItem(etExpenseAmount, etExpenseDescription, view)
-        expenseItems.add(item)
+private class PeopleAdapter(
+    val onOpen: (Long) -> Unit
+) : RecyclerView.Adapter<PeopleVH>() {
 
-        etExpenseAmount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) { updateTotalAmount() }
+    private var items: List<Person> = emptyList()
+    fun submit(list: List<Person>) { items = list; notifyDataSetChanged() }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeopleVH {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_person, parent, false)
+        return PeopleVH(v, onOpen)
+    }
+    override fun getItemCount() = items.size
+    override fun onBindViewHolder(holder: PeopleVH, position: Int) = holder.bind(items[position])
+}
+
+private class PeopleVH(
+    v: View,
+    private val onOpen: (Long) -> Unit
+) : RecyclerView.ViewHolder(v) {
+
+    private val etName: EditText = v.findViewById(R.id.etName)
+    private val etBase: EditText = v.findViewById(R.id.etBaseTotal)
+    private val tvRemaining: TextView = v.findViewById(R.id.tvRemaining)
+    private val clickAway: View = v.findViewById(R.id.clickAway)
+
+    fun bind(p: Person) {
+        etName.setText(p.name)
+        etBase.setText(if (p.baseTotalCents == 0L) "" else (p.baseTotalCents / 100.0).toString())
+        tvRemaining.text = "Осталось: ${centsToUsdText(p.remainingCents())}"
+
+        etName.addTextChangedListener(simpleWatcher { text ->
+            p.name = text
+            PersonsRepo.update(p)
+        })
+        etBase.addTextChangedListener(simpleWatcher { text ->
+            p.baseTotalCents = parseUsdToCents(text)
+            PersonsRepo.update(p)
+            tvRemaining.text = "Осталось: ${centsToUsdText(p.remainingCents())}"
         })
 
-        btnRemoveExpense.setOnClickListener {
-            if (expenseItems.size > 1) {
-                expensesContainer.removeView(view)
-                expenseItems.remove(item)
-                updateTotalAmount()
-            }
+        // тап по карточке (вне полей) — открываем траты
+        itemView.setOnClickListener { /* глушим общий клик */ }
+        clickAway.setOnClickListener { onOpen(p.id) }
+        // также откроем по клику на фон, если поля не в фокусе
+        itemView.setOnTouchListener { _, _ ->
+            if (!etName.isFocused && !etBase.isFocused) {
+                onOpen(p.id); true
+            } else false
         }
-
-        expensesContainer.addView(view)
     }
 
-    private fun updateTotalAmount() {
-        var total = 0.0
-        for (item in expenseItems) {
-            val t = item.amountEditText.text.toString()
-            total += t.toDoubleOrNull() ?: 0.0
+    private fun simpleWatcher(onAfter: (String) -> Unit) =
+        object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { onAfter(s?.toString().orEmpty()) }
         }
-        etTotalAmount.setText(String.format("%.2f", total))
-    }
-
-    private fun hideKeyboard() {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        currentFocus?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
-    }
-
-    data class ExpenseItem(
-        val amountEditText: EditText,
-        val descriptionEditText: EditText,
-        val view: View
-    )
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_background"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp">
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Имя Фамилия"
+        android:inputType="textPersonName"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Всего денег (USD)"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"/>
+
+    <EditText
+        android:id="@+id/etBaseTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="0.00"
+        android:inputType="numberDecimal"/>
+
+    <TextView
+        android:id="@+id/tvRemaining"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Осталось: $0.00"
+        android:layout_marginTop="8dp"/>
+
+    <!-- служебная зона для клика вне полей -->
+    <View
+        android:id="@+id/clickAway"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+</LinearLayout>

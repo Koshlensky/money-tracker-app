@@ -1,25 +1,37 @@
-# Статьи
+# Android Money Tracker App
 
-Добро пожаловать в мой репозиторий! Здесь я буду публиковать свои [статьи](https://www.elibrary.ru/author_items.asp?authorid=1103709&pubrole=100&show_refs=1&show_option=0) на русском и английском языках, используя синтаксис AsciiDoc. [AsciiDoc](https://docs.asciidoctor.org/) - это мощный и гибкий язык разметки, который позволяет легко создавать хорошо структурированные и читабельные документы. Я надеюсь, что вы найдете мои статьи полезными и интересными.
+🇷🇺 **Описание**  
+Это простое Android-приложение для учета расходов. Пользователь может добавлять блоки с именем и фамилией. Для каждого блока хранится итоговая сумма в долларах, которая автоматически пересчитывается на основе введённых трат.  
+При нажатии вне полей ввода имени и итоговой суммы открывается раздел с тратами, где можно указать:  
+- сколько было потрачено (в долларах);  
+- описание траты (опционально).  
 
-## Статьи на русском языке (Articles in Russian):
-
-1. Управление искусственных нейронных сетей распознавания раскадровки образов высокого разрешения
-
-Отдельно отмечу, что я буду постепенно обновлять статьи и дублировать их на свой тестовый сайт на asciidoc - [AsciiEvangelist](https://koshlensky.github.io/ascii-evangelist/).
-
----
-
-Welcome to my repository! Here, I will be publishing my [articles](https://www.elibrary.ru/author_items.asp?authorid=1103709&pubrole=100&show_refs=1&show_option=0) in both Russian and English, using the AsciiDoc syntax. [AsciiDoc](https://docs.asciidoctor.org/) is a powerful and flexible markup language that makes it easy to create well-structured and readable documents. I hope you find my articles useful and interesting.
-
-## Статьи на английском (Articles in English):
-
-1. Artificial Neural Network Control for High-Resolution Image Recognition Storyboarding
-
-On a separate note, I will be gradually updating the articles and duplicating them to my test site on asciidoc - [AsciiEvangelist](https://koshlensky.github.io/ascii-evangelist/).
+Функции:  
+- Добавление нескольких пользователей (по кнопке «+»).  
+- Автоматический подсчет итоговой суммы по каждому пользователю.  
+- Возможность удаления отдельных трат.  
+- Простой современный интерфейс.  
 
 ---
 
-Contacts:
+🇬🇧 **Description**  
+This is a simple Android app for expense tracking. The user can add blocks with **First Name** and **Last Name**. Each block contains a total amount in USD, which is automatically updated based on entered expenses.  
+When the user taps outside the name and total input fields, the **Expenses Section** opens, where they can enter:  
+- the amount spent (USD);  
+- an optional description of the expense.  
 
-[GitHub](https://github.com/Koshlensky)
+Features:  
+- Add multiple users (via the “+” button).  
+- Automatic calculation of total per user.  
+- Ability to remove individual expenses.  
+- Simple, modern interface.  
+
+---
+
+## 🚀 Установка / Installation
+
+1. Клонировать проект / Clone the project:
+   ```bash
+   git clone https://github.com/yourname/money-tracker-app.git
+   cd money-tracker-app
+>>>>>>> b37ae4c (Main app)

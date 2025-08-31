@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -26,6 +27,12 @@ class ExpensesActivity : AppCompatActivity() {
         tvTitle = findViewById(R.id.tvTitle)
         expensesContainer = findViewById(R.id.expensesContainer)
         val btnAdd: ImageButton = findViewById(R.id.btnAddExpense)
+
+        // 🆕 кнопка Назад
+        val btnBack: Button = findViewById(R.id.btnBack)
+        btnBack.setOnClickListener {
+            finish()   // просто закрывает эту активити и возвращает на MainActivity
+        }
 
         tvTitle.text = "Окно трат — ${if (person.name.isBlank()) "без имени" else person.name}\nОсталось: ${centsToUsdText(person.remainingCents())}"
 

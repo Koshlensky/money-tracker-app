@@ -3,18 +3,53 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="24dp">  <!-- ↓↓↓  отступ от статуса -->
+    android:paddingTop="8dp">
 
+    <!-- Список карточек. Отодвигаем вниз под верхнюю панель -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPeople"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="88dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="8dp"
         android:paddingBottom="16dp"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false" />
 
+    <!-- Верхняя панель валюты (ниже и кликабельна) -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="8dp"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/tvCurrency"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Валюта: USD"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnCurrency"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="Сменить валюту"
+            android:src="@android:drawable/ic_menu_compass"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true" />
+    </LinearLayout>
+
+    <!-- Плавающая кнопка добавления -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddPerson"
         android:layout_width="wrap_content"
@@ -22,5 +57,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="Добавить"
-        android:src="@android:drawable/ic_input_add"/>
+        android:src="@android:drawable/ic_input_add" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,61 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:layout_marginBottom="16dp"
-              android:padding="16dp"
-              android:background="@drawable/border_background">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/border_background"
+    android:padding="12dp"
+    android:layout_marginBottom="12dp">
 
+    <!-- Верхняя строка: заголовок + крестик удаления -->
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
+        <!-- Лейбл, который мы меняем в коде на 'Сумма траты ($/¥/₽)' -->
         <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Сумма траты ($)"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp"/>
+            android:id="@+id/tvAmountLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Сумма траты"
+            android:textAppearance="?attr/textAppearanceBody2" />
 
         <ImageButton
-                android:id="@+id/btnRemoveExpense"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_delete"
-                android:background="?android:attr/selectableItemBackground"
-                android:contentDescription="Удалить трату"/>
-
+            android:id="@+id/btnRemoveExpense"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Удалить трату"
+            android:src="@android:drawable/ic_delete" />
     </LinearLayout>
 
+    <!-- Строка ввода: сумма + описание -->
     <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/etExpenseAmount"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:hint="0"
+            android:maxLines="1" />
 
         <EditText
-                android:id="@+id/etExpenseAmount"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="0.00"
-                android:inputType="numberDecimal"
-                android:textSize="16sp"
-                android:layout_marginEnd="8dp"/>
-
-        <EditText
-                android:id="@+id/etExpenseDescription"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:hint="Описание (опционально)"
-                android:inputType="text"
-                android:textSize="14sp"/>
-
+            android:id="@+id/etExpenseDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:hint="Описание (опционально)"
+            android:inputType="textCapSentences"
+            android:maxLines="1" />
     </LinearLayout>
 
 </LinearLayout>

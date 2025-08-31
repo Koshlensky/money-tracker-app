@@ -1,45 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp" android:paddingRight="16dp"
-    android:paddingTop="24dp" android:paddingBottom="16dp">
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <!-- Заголовок -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="56dp"
         android:text="Окно трат"
-        android:textStyle="bold" android:textSize="18sp"
-        android:layout_marginBottom="12dp"/>
+        android:textStyle="bold"/>
 
-    <LinearLayout
-        android:id="@+id/expensesContainer"
+    <!-- Кнопка смены валюты (глобус) справа сверху -->
+    <ImageButton
+        android:id="@+id/btnCurrencyExp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_gravity="top|end"
+        android:contentDescription="Сменить валюту"
+        android:src="@android:drawable/ic_menu_compass"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <!-- Контент ниже заголовка -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="1"/>
+        android:layout_height="match_parent"
+        android:layout_marginTop="72dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="88dp">
 
-    <!-- нижняя панель: кнопки -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end">
-
-        <ImageButton
-            android:id="@+id/btnAddExpense"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_add"
-            android:contentDescription="Добавить трату"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
-
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/expensesContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Назад"
-            android:layout_marginStart="8dp"/>
-    </LinearLayout>
-</LinearLayout>
+            android:orientation="vertical"/>
+    </ScrollView>
+
+    <!-- Назад слева -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:contentDescription="Назад"
+        android:src="@android:drawable/ic_media_previous"/>
+
+    <!-- Плюс справа -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddExpense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Добавить трату"
+        android:src="@android:drawable/ic_input_add"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

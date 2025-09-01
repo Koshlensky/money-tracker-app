@@ -7,6 +7,7 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.PopupMenu
@@ -104,7 +105,8 @@ class MainActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).post {
                     adapter.submit(PersonsRepo.people)
                     updateCurrencyLabel()
-                    Toast.makeText(this, "Сконвертировано в ${target.name}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Сконвертировано в ${target.name}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             } catch (e: Exception) {
                 Handler(Looper.getMainLooper()).post {
@@ -213,9 +215,15 @@ private class PeopleVH(
         }.also { etBase.addTextChangedListener(it) }
 
         itemView.setOnClickListener {
-            if (!etName.isFocused && !etBase.isFocused) openSafe(p.id)
+            if (!etName.isFocused && !etBase.isFocused) {
+                clearFocusAndHideKeyboard(itemView)
+                openSafe(p.id)
+            }
         }
-        clickAway.setOnClickListener { openSafe(p.id) }
+        clickAway.setOnClickListener {
+            clearFocusAndHideKeyboard(itemView)
+            openSafe(p.id)
+        }
 
         btnRemove.setOnClickListener {
             AlertDialog.Builder(itemView.context)
@@ -228,6 +236,13 @@ private class PeopleVH(
                 .setNegativeButton("Отмена", null)
                 .show()
         }
+    }
+
+    private fun clearFocusAndHideKeyboard(view: View) {
+        etName.clearFocus()
+        etBase.clearFocus()
+        val imm = view.context.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }
 
@@ -244,14 +259,12 @@ object CurrencyManagerInline {
             val (jpy, rub) = getRatesFrom(u, "JPY", "RUB")
             if (jpy != null && rub != null) return UsdRates(jpy, rub)
         }
-
         // 2) fallback: open.er-api.com
         runCatching {
             val u = java.net.URL("https://open.er-api.com/v6/latest/USD")
             val (jpy, rub) = getRatesFrom(u, "JPY", "RUB", rootKey = "rates")
             if (jpy != null && rub != null) return UsdRates(jpy, rub)
         }
-
         throw RuntimeException("Не удалось получить курсы валют. Проверьте интернет.")
     }
 
@@ -267,7 +280,6 @@ object CurrencyManagerInline {
             requestMethod = "GET"
             instanceFollowRedirects = true
         }
-
         conn.inputStream.use { input ->
             val text = java.io.BufferedReader(java.io.InputStreamReader(input)).readText()
             val json = org.json.JSONObject(text)
@@ -279,27 +291,23 @@ object CurrencyManagerInline {
         }
     }
 
-    /** коэффициент пересчёта current -> target исходя из USD->(JPY,RUB) */
+    /** Коэффициент пересчёта мелких единиц (центов/копеек/иен) current -> target */
     fun factor(current: Currency, target: Currency, usdRates: UsdRates): Double {
         if (current == target) return 1.0
 
-        // сколько целевых денежных единиц за 1 USD
         fun usdTo(c: Currency) = when (c) {
             Currency.USD -> 1.0
-            Currency.JPY -> usdRates.usdToJpy   // JPY за 1 USD
-            Currency.RUB -> usdRates.usdToRub   // RUB за 1 USD
+            Currency.JPY -> usdRates.usdToJpy   // 1 USD = X JPY
+            Currency.RUB -> usdRates.usdToRub   // 1 USD = Y RUB
+        }
+        // сколько мелких единиц в одной «основной» единице
+        fun scale(c: Currency) = when (c) {
+            Currency.JPY -> 1.0   // у иены нет копеек
+            else -> 100.0         // USD/RUB — центы/копейки
         }
 
-        // масштаб микроединиц хранения
-        fun minor(c: Currency) = when (c) {
-            Currency.USD, Currency.RUB -> 100.0 // центы/копейки
-            Currency.JPY -> 1.0                 // у иены нет «центов»
-        }
-
-        // переводим микроединицы current -> микроединицы target
-        val currToUsd = 1.0 / usdTo(current)        // major current -> USD major
-        val usdToTarget = usdTo(target)             // USD major -> target major
-        val scale = minor(target) / minor(current)  // учитываем разницу «центов»
-        return currToUsd * usdToTarget * scale
+        val ratePart = (1.0 / usdTo(current)) * usdTo(target) // перевод major->major
+        val scalePart = scale(target) / scale(current)        // поправка для minor
+        return ratePart * scalePart
     }
 }

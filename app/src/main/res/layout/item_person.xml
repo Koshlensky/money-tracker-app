@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:id="@+id/personRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:background="@drawable/border_background"
-    android:padding="16dp"
-    android:layout_marginBottom="12dp">
+    android:padding="12dp"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
-    <!-- Верхняя строка: Имя + крестик удаления -->
+    <!-- Шапка: Имя + крестик удаления -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,42 +24,53 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Имя Фамилия"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             android:inputType="textPersonName" />
 
         <ImageButton
             android:id="@+id/btnRemovePerson"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:padding="4dp"
-            android:contentDescription="Удалить"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Удалить карточку"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" />
     </LinearLayout>
 
+    <!-- Метка 'Всего денег' -->
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/tvBaseLabel"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Всего денег (USD)"
-        android:textStyle="bold"
-        android:layout_marginTop="12dp" />
+        android:textStyle="bold" />
 
+    <!-- Сумма базового баланса -->
     <EditText
         android:id="@+id/etBaseTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="0.00"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:imeOptions="actionDone" />
 
+    <!-- Остаток -->
     <TextView
         android:id="@+id/tvRemaining"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Осталось: $0.00"
-        android:layout_marginTop="8dp" />
+        android:textColor="#808080" />
 
-    <!-- маленькая «пустая» зона для клика вне полей -->
+    <!-- Большая кликабельная зона для входа внутрь карточки -->
     <View
         android:id="@+id/clickAway"
         android:layout_width="match_parent"
-        android:layout_height="8dp" />
+        android:layout_height="72dp"
+        android:layout_marginTop="6dp"
+        android:background="@android:color/transparent" />
 </LinearLayout>
